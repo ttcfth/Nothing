@@ -1,22 +1,66 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>My project</title>
-  </head>
-  <style>
-    body{
-    background-color : green;
-    }
-    #j{
-       position : absolute;
-       left : 200px;
-       top : 100px;
-      color : tomato;
-      width : 500px;
-      height : 175px;
-    }
-  </style>
-  <body>
-    <a id = "j">Welcome</a>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape from Island</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <h1>Escape from Island</h1>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+    <div id="game-info">
+        <p>Collect items to escape the island. Watch out for enemies!</p>
+        <p>Your score: <span id="score">0</span></p>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game variables
+        let player = { x: 50, y: 50, width: 30, height: 30, speed: 5 };
+        let score = 0;
+        let collectibles = [];
+        let enemies = [];
+
+        function setup() {
+            // Initialize collectibles and enemies
+        }
+
+        function update() {
+            // Update player position
+            // Check for collectible collection
+            // Check for collisions with enemies
+            // Update score
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Draw player, collectibles, and enemies
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowUp': player.y -= player.speed; break;
+                case 'ArrowDown': player.y += player.speed; break;
+                case 'ArrowLeft': player.x -= player.speed; break;
+                case 'ArrowRight': player.x += player.speed; break;
+            }
+        });
+
+        setup();
+        loop();
+    </script>
+</body>
 </html>
