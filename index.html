@@ -3,64 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape from Island</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <title>Mobile Support Game</title>
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+        canvas { background: #fff; display: block; }
+    </style>
 </head>
 <body>
-    <h1>Escape from Island</h1>
-    <div id="game-container">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-    </div>
-    <div id="game-info">
-        <p>Collect items to escape the island. Watch out for enemies!</p>
-        <p>Your score: <span id="score">0</span></p>
-    </div>
+    <canvas id="gameCanvas"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Game variables
-        let player = { x: 50, y: 50, width: 30, height: 30, speed: 5 };
-        let score = 0;
-        let collectibles = [];
+        // Resize canvas to full window size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Game mechanics variables
         let enemies = [];
+        let player = { x: canvas.width / 2, y: canvas.height / 2, radius: 15 }; // Player properties
 
-        function setup() {
-            // Initialize collectibles and enemies
+        // Enemy AI properties
+        function createEnemy() {
+            const enemy = {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: 10,
+                speed: 1,
+                pathfinding: function() {
+                    const dx = player.x - this.x;
+                    const dy = player.y - this.y;
+                    const angle = Math.atan2(dy, dx);
+                    this.x += Math.cos(angle) * this.speed;
+                    this.y += Math.sin(angle) * this.speed;
+                }
+            };
+            enemies.push(enemy);
         }
 
-        function update() {
-            // Update player position
-            // Check for collectible collection
-            // Check for collisions with enemies
-            // Update score
-        }
+        // Touch controls
+        let touchStartX, touchStartY;
+        let touchEndX, touchEndY;
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Draw player, collectibles, and enemies
-            ctx.fillStyle = 'blue';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
+        window.addEventListener('touchstart', (event) => {
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
+        }, false);
+        window.addEventListener('touchend', (event) => {
+            touchEndX = event.changedTouches[0].clientX;
+            touchEndY = event.changedTouches[0].clientY;
+            handleTouch();
+        }, false);
 
-        function loop() {
-            update();
-            draw();
-            requestAnimationFrame(loop);
-        }
-
-        document.addEventListener('keydown', (e) => {
-            switch (e.key) {
-                case 'ArrowUp': player.y -= player.speed; break;
-                case 'ArrowDown': player.y += player.speed; break;
-                case 'ArrowLeft': player.x -= player.speed; break;
-                case 'ArrowRight': player.x += player.speed; break;
+        function handleTouch() {
+            if (touchEndX < touchStartX) {
+                player.x -= 10; // Move left
+            } else if (touchEndX > touchStartX) {
+                player.x += 10; // Move right
             }
-        });
+            if (touchEndY < touchStartY) {
+                player.y -= 10; // Move up
+            } else if (touchEndY > touchStartY) {
+                player.y += 10; // Move down
+            }
+            player.x = Math.max(0, Math.min(canvas.width, player.x));
+            player.y = Math.max(0, Math.min(canvas.height, player.y));
+        }
 
-        setup();
-        loop();
+        // Main game loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.fillStyle = 'blue';
+            ctx.fill();
+            enemies.forEach(enemy => {
+                enemy.pathfinding();
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'red';
+                ctx.fill();
+            });
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        for (let i = 0; i < 5; i++) {
+            createEnemy();
+        }
+        gameLoop();
     </script>
 </body>
 </html>
